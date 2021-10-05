@@ -11,9 +11,9 @@ class Kro_dataset(Dataset):
     def __init__(self, num_nodes):
         super(Kro_dataset, self).__init__()
 
-        x1 = np.loadtxt('krodata/kroA%d.tsp'%num_nodes, skiprows=6, usecols=(1, 2), delimiter=' ', dtype=float)
+        x1 = np.loadtxt('Post_process/krodata/kroA%d.tsp'%num_nodes, skiprows=6, usecols=(1, 2), delimiter=' ', dtype=float)
         x1 = x1 / (np.max(x1,0))
-        x2 = np.loadtxt('krodata/kroB%d.tsp'%num_nodes, skiprows=6, usecols=(1, 2), delimiter=' ', dtype=float)
+        x2 = np.loadtxt('Post_process/krodata/kroB%d.tsp'%num_nodes, skiprows=6, usecols=(1, 2), delimiter=' ', dtype=float)
         x2 = x2 / (np.max(x2,0))
         x = np.concatenate((x1, x2),axis=1)
         x = x.T

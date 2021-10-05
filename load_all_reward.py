@@ -16,7 +16,7 @@ import time
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # "../tsp_transfer_100run_500000_5epoch_20city/20"效果一般。应该再训练一遍
-save_dir = "../tsp_transfer_100run_500000_5epoch_40city/40"
+save_dir = "tsp_transfer_100run_500000_5epoch_40city/40"
 # save_dir = "../tsp_transfer/100"
 # param
 update_fn = None
@@ -89,10 +89,10 @@ plt.show()
 
 # Convert to .mat
 obj1_matrix, obj2_matrix = dis_matrix(static, STATIC_SIZE)
-scio.savemat("data/obj1_%d_%d.mat"%(STATIC_SIZE, D), {'obj1':obj1_matrix})
-scio.savemat("data/obj2_%d_%d.mat"%(STATIC_SIZE, D), {'obj2':obj2_matrix})
-scio.savemat("data/rl%d_%d.mat"%(STATIC_SIZE, D),{'rl':objs})
-scio.savemat("data/tour%d_%d.mat"%(STATIC_SIZE, D),{'tour':np.array(tours)})
+scio.savemat("Post_process/data/obj1_%d_%d.mat"%(STATIC_SIZE, D), {'obj1':obj1_matrix})
+scio.savemat("Post_process/data/obj2_%d_%d.mat"%(STATIC_SIZE, D), {'obj2':obj2_matrix})
+scio.savemat("Post_process/data/rl%d_%d.mat"%(STATIC_SIZE, D),{'rl':objs})
+scio.savemat("Post_process/data/tour%d_%d.mat"%(STATIC_SIZE, D),{'tour':np.array(tours)})
 
 
 # from load_test_plot import show

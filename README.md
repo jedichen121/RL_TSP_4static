@@ -18,3 +18,18 @@
     
 
 ### A lot codes are inherited from https://github.com/mveres01/pytorch-drl4vrp
+
+
+
+## Running instructions
+
+Create a container with pytorch installed.
+
+```
+docker run -it -v /home/chenjiyang/RL_TSP_4static/:/rl --name moo_test pytorch/pytorch
+
+docker start moo_test -i
+pip install scipy matplotlib
+
+python3 load_all_reward.py
+```
