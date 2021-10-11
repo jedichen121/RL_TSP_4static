@@ -15,6 +15,7 @@ class Encoder(nn.Module):
 
     def forward(self, input):
         output = self.conv(input)
+        # Jiyang: (static_size, hidden_size, seq_len)
         return output  # (batch, hidden_size, seq_len)
 
 

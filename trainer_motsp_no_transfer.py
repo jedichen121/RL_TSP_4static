@@ -60,31 +60,31 @@ class StateCritic(nn.Module):
         return output
 
 
-class Critic(nn.Module):
-    """Estimates the problem complexity.
+# class Critic(nn.Module):
+#     """Estimates the problem complexity.
 
-    This is a basic module that just looks at the log-probabilities predicted by
-    the encoder + decoder, and returns an estimate of complexity
-    """
+#     This is a basic module that just looks at the log-probabilities predicted by
+#     the encoder + decoder, and returns an estimate of complexity
+#     """
 
-    def __init__(self, hidden_size):
-        super(Critic, self).__init__()
+#     def __init__(self, hidden_size):
+#         super(Critic, self).__init__()
 
-        # Define the encoder & decoder models
-        self.fc1 = nn.Conv1d(1, hidden_size, kernel_size=1)
-        self.fc2 = nn.Conv1d(hidden_size, 20, kernel_size=1)
-        self.fc3 = nn.Conv1d(20, 1, kernel_size=1)
+#         # Define the encoder & decoder models
+#         self.fc1 = nn.Conv1d(1, hidden_size, kernel_size=1)
+#         self.fc2 = nn.Conv1d(hidden_size, 20, kernel_size=1)
+#         self.fc3 = nn.Conv1d(20, 1, kernel_size=1)
 
-        for p in self.parameters():
-            if len(p.shape) > 1:
-                nn.init.xavier_uniform_(p)
+#         for p in self.parameters():
+#             if len(p.shape) > 1:
+#                 nn.init.xavier_uniform_(p)
 
-    def forward(self, input):
+#     def forward(self, input):
 
-        output = F.relu(self.fc1(input.unsqueeze(1)))
-        output = F.relu(self.fc2(output)).squeeze(2)
-        output = self.fc3(output).sum(dim=2)
-        return output
+#         output = F.relu(self.fc1(input.unsqueeze(1)))
+#         output = F.relu(self.fc2(output)).squeeze(2)
+#         output = self.fc3(output).sum(dim=2)
+#         return output
 
 
 def validate(data_loader, actor, reward_fn, w1, w2, render_fn=None, save_dir='.',
@@ -305,76 +305,6 @@ def train_tsp(args, w1=1, w2=0, checkpoint = None):
     out = validate(test_loader, actor, motsp.reward, w1, w2, motsp.render, test_dir, num_plot=5)
 
     print('w1=%2.2f,w2=%2.2f. Average tour length: ' % (w1, w2), out)
-
-
-def train_vrp(args):
-
-    # Goals from paper:
-    # VRP10, Capacity 20:  4.84  (Greedy)
-    # VRP20, Capacity 30:  6.59  (Greedy)
-    # VRP50, Capacity 40:  11.39 (Greedy)
-    # VRP100, Capacity 50: 17.23  (Greedy)
-
-    from tasks import vrp
-    from tasks.vrp import VehicleRoutingDataset
-
-    # Determines the maximum amount of load for a vehicle based on num nodes
-    LOAD_DICT = {10: 20, 20: 30, 50: 40, 100: 50}
-    MAX_DEMAND = 9
-    STATIC_SIZE = 2 # (x, y)
-    DYNAMIC_SIZE = 2 # (load, demand)
-
-    max_load = LOAD_DICT[args.num_nodes]
-
-    train_data = VehicleRoutingDataset(args.train_size,
-                                       args.num_nodes,
-                                       max_load,
-                                       MAX_DEMAND,
-                                       args.seed)
-
-    valid_data = VehicleRoutingDataset(args.valid_size,
-                                       args.num_nodes,
-                                       max_load,
-                                       MAX_DEMAND,
-                                       args.seed + 1)
-
-    actor = DRL4TSP(STATIC_SIZE,
-                    DYNAMIC_SIZE,
-                    args.hidden_size,
-                    train_data.update_dynamic,
-                    train_data.update_mask,
-                    args.num_layers,
-                    args.dropout).to(device)
-
-    critic = StateCritic(STATIC_SIZE, DYNAMIC_SIZE, args.hidden_size).to(device)
-
-    kwargs = vars(args)
-    kwargs['train_data'] = train_data
-    kwargs['valid_data'] = valid_data
-    kwargs['reward_fn'] = vrp.reward
-    kwargs['render_fn'] = vrp.render
-
-    if args.checkpoint:
-        path = os.path.join(args.checkpoint, 'actor.pt')
-        actor.load_state_dict(torch.load(path, device))
-
-        path = os.path.join(args.checkpoint, 'critic.pt')
-        critic.load_state_dict(torch.load(path, device))
-
-    if not args.test:
-        train(actor, critic, **kwargs)
-
-    test_data = VehicleRoutingDataset(args.valid_size,
-                                      args.num_nodes,
-                                      max_load,
-                                      MAX_DEMAND,
-                                      args.seed + 2)
-
-    test_dir = 'test'
-    test_loader = DataLoader(test_data, args.batch_size, False, num_workers=0)
-    out = validate(test_loader, actor, vrp.reward, vrp.render, test_dir, num_plot=5)
-
-    print('Average tour length: ', out)
 
 
 if __name__ == '__main__':
